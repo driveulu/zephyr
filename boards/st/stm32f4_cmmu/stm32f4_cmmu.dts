@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) 2017 Linaro Limited
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/f4/stm32f405Xg.dtsi>
+#include <st/f4/stm32f405o(e-g)yx-pinctrl.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	model = "STMicroelectronics STM32F4DISCOVERY board";
+	compatible = "st,stm32f4discovery";
+
+	chosen {
+		zephyr,console    = &usart2;
+		zephyr,shell-uart = &usart2;
+		zephyr,sram       = &sram0;
+		zephyr,flash      = &flash0;
+		zephyr,ccm        = &ccm0;
+		zephyr,canbus     = &can2;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led_g: gpio_01 {
+			gpios = <&gpiob 8 GPIO_ACTIVE_HIGH>;
+			label = "User power LED green";
+		};
+		led_r: gpio_02 {
+			gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+			label = "User power LED red";
+		};
+        acc_pm: gpio_03 {
+			gpios = <&gpiod 1 GPIO_ACTIVE_HIGH>;
+			label = "User acc&gyro power control";
+		};
+	};
+
+	aliases {
+        led0   = &led_g;
+        led2   = &led_r;
+        accpm0 = &acc_pm;
+	};
+};
+
+&clk_lsi {
+	status = "okay";
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(8)>;
+	status = "okay";
+};
+
+&pll {
+	div-m  = <8>;
+	mul-n  = <336>;
+	div-p  = <2>;
+	div-q  = <7>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks          = <&pll>;
+	clock-frequency = <DT_FREQ_M(168)>;
+	ahb-prescaler   = <1>;
+	apb1-prescaler  = <4>;
+	apb2-prescaler  = <2>;
+};
+
+&usart2 {
+	pinctrl-0     = <&usart2_tx_pa2 &usart2_rx_pa3>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status        = "okay";
+};
+
+
+&rtc {
+	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x10000000>,
+		     <&rcc STM32_SRC_LSI RTC_SEL(2)>;
+	status = "okay";
+
+	backup_regs {
+		status = "okay";
+	};
+};
+
+
+&can2 {
+	pinctrl-0     = <&can2_rx_pb5 &can2_tx_pb13>;
+	pinctrl-names = "default";
+	status        = "okay";
+};
+
+&adc1 {
+	st,adc-prescaler = <2>;
+	status = "okay";
+};

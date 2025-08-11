@@ -1,0 +1,14 @@
+identifier: stm32f4_cmmu
+name: ST STM32F4 ULU CMMU project
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+ram: 192
+flash: 512
+supported:
+  - can
+  - pwm
+  - counter
+vendor: st
